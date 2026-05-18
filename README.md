@@ -234,48 +234,87 @@ Test-Time Augmentation (TTA):
 ## 📁 File Structure
 
 ```
-📦 EANDD/
+📦 Project Root/
 │
-├── 📁 data/
-│   ├── 📁 plantvillage/          ← RGB images (54,000+)
-│   ├── 📁 hyperleaf2024/         ← Hyperspectral samples (100,000+)
-│   └── 📁 preprocessed/          ← PCA-compressed outputs
+├── 📁 notebooks/                          ← All Jupyter experiments
+│   ├── 📓 01_data_exploration.ipynb       ← EDA · dataset understanding
+│   ├── 📓 02_build_preprocessing_         ← HSI preprocessing pipeline
+│   │      pipeline(hyperspectral).ipynb       (PCA, masking, normalization)
+│   ├── 📓 02_modeling_baselines.ipynb     ← Baseline model comparisons
+│   ├── 📓 03_hyperspectral_modeling_      ← Improved HSI modeling
+│   │      improved.ipynb
+│   ├── 📓 03_preprocess_data_for_         ← Training data preparation
+│   │      training(hyperspectral).ipynb
+│   ├── 📓 04_model_evaluation_and_        ← Evaluation + XAI analysis
+│   │      xai.ipynb
+│   ├── 📓 04_train_model_v2(              ← Final model training
+│   │      hyperspectral).ipynb
+│   ├── 📓 04_xai_lime_hyperspectral_      ← LIME explainability (fixed)
+│   │      fixed.ipynb
+│   └── 📓 06_xai_lime_hyperspectral.ipynb ← Final LIME analysis
 │
-├── 📁 models/
-│   ├── 🐍 custom_cnn.py          ← ⭐ Best model · 93.40% accuracy
-│   ├── 🐍 resnet50_adapter.py    ← ResNet50 with 1×1 adapter block
-│   ├── 🐍 densenet121_refiner.py ← DenseNet121 with feature refiner
-│   └── 🐍 ensemble.py            ← Weighted Soft Voting + TTA
+├── 📁 models/                             ← Trained model weights
+│   ├── 🤖 FINAL_STABLE_MODEL.h5          ← ⭐ Production model
+│   ├── 🤖 best_hyperspectral_model.h5    ← Best HSI checkpoint
+│   ├── 🤖 CustomCNN_final_best.h5        ← Custom CNN · 93.40% acc
+│   ├── 🤖 CustomCNN_final.h5
+│   ├── 🤖 custom_cnn_stable.h5
+│   ├── 🤖 DenseNet121_final_best.h5      ← DenseNet121 · 72.33% acc
+│   ├── 🤖 DenseNet121_final.h5
+│   ├── 🤖 DenseNet121_phase1_best.h5
+│   ├── 🤖 hsi_custom_cnn.h5             ← HSI-specific CNN
+│   ├── 🤖 hsi_expert_cnn.h5
+│   ├── 🤖 hyper_95_checkpoint.h5        ← 95% checkpoint
+│   ├── 📊 hsi_channel_mean.npy          ← Normalization stats
+│   ├── 📊 hsi_channel_std.npy
+│   ├── 🔧 hsi_scaler.pkl                ← Fitted scaler
+│   ├── 🔧 hsi_label_encoder.pkl         ← Label encoder
+│   ├── 🔧 hyper_label_encoder.pkl
+│   ├── 🔧 hyperleaf_full_pipeline.joblib ← Full inference pipeline
+│   └── 🔧 label_encoder.pkl
 │
-├── 📁 preprocessing/
-│   ├── 🐍 pca_compression.py     ← 15-component PCA pipeline
-│   ├── 🐍 normalization.py       ← Z-score normalization
-│   ├── 🐍 augmentation.py        ← Rotation, flip, blur, brightness
-│   └── 🐍 fusion.py              ← HSI + RGB multimodal fusion (SIFT)
+├── 📁 src2/                              ← Application source code
+│   ├── 🐍 app.py                         ← ⭐ Main Streamlit app
+│   ├── 🐍 inference.py                   ← Model inference pipeline
+│   ├── 🐍 report_generator.py            ← Auto PDF reports (ReportLab)
+│   ├── 🐍 app2.py – app6.py             ← Development iterations
+│   └── (app2–app6 = experimental versions, app.py is final)
 │
-├── 📁 explainability/
-│   ├── 🐍 lime_analysis.py       ← LIME heatmaps per class
-│   └── 🐍 shap_bands.py          ← Global PCA band importance
-│
-├── 📁 app/
-│   ├── 🐍 streamlit_app.py       ← Main Streamlit dashboard
-│   ├── 🐍 farmer_view.py         ← Bilingual farmer interface (EN+HI)
-│   ├── 🐍 expert_view.py         ← Detailed researcher interface
-│   └── 🐍 report_generator.py    ← Auto PDF reports (ReportLab)
-│
-├── 📁 results/
-│   ├── 🖼️ confusion_matrix.png
-│   ├── 🖼️ bar_accuracy.png
-│   ├── 🖼️ per_class_metrics.png
-│   └── 📁 lime_explanations/
-│
-├── 📄 requirements.txt
-└── 📄 README.md                  ← You are here
+├── 🎥 APP_Demo.mp4                       ← Full app demo video
+├── 🖼️ bar_accuracy.png.jpeg             ← Model accuracy comparison
+├── 🖼️ confusion_matrix.png.jpeg         ← Ensemble confusion matrix
+├── 🖼️ lime_explanations.png.jpeg        ← LIME heatmap results
+├── 🖼️ per_class_metrics.png.jpeg        ← Per-class P/R/F1 scores
+└── 📄 README.md                          ← You are here
 ```
 
 ---
 
-## 🖥️ Streamlit Dashboard — Dual Interface
+## 🎥 App Demo Video
+
+[![Watch Demo](https://img.shields.io/badge/▶_Watch_Full_Demo-APP__Demo.mp4-FF0000?style=for-the-badge&logo=youtube)](APP_Demo.mp4)
+
+> Full walkthrough — Farmer View · Expert View · LIME Heatmaps · PDF Report generation
+
+---
+
+## 📊 Results & Visual Outputs
+
+### Model Accuracy Comparison
+![Model Accuracy](bar_accuracy.png.jpeg)
+
+### Ensemble Confusion Matrix
+> 113 Healthy · 17 Partial · 162 Deficient — correctly classified
+![Confusion Matrix](confusion_matrix.png.jpeg)
+
+### Per-Class Precision · Recall · F1-Score
+![Per Class Metrics](per_class_metrics.png.jpeg)
+
+### LIME Explainability Heatmaps
+> Green = supporting regions · Red = opposing regions · Biologically validated at 680nm
+![LIME Explanations](lime_explanations.png.jpeg)
+
+---
 
 The app features a **dual-interface design** tailored to two very different users:
 
@@ -345,26 +384,32 @@ pip install -r requirements.txt
 
 ### Run the Streamlit App
 ```bash
-streamlit run app/streamlit_app.py
+streamlit run src2/app.py
 ```
 
-### Train Models
+### Run Inference Directly
 ```bash
-# Train Custom CNN (best model)
-python models/custom_cnn.py --epochs 50 --batch_size 32
-
-# Train full ensemble
-python models/ensemble.py --mode train
+python src2/inference.py --input your_image.npy
 ```
 
-### Run Inference
+### Generate PDF Report
 ```bash
-python models/ensemble.py --mode predict --input your_image.npy
+python src2/report_generator.py
 ```
 
-### Generate LIME Explanations
+### Run Notebooks (in order)
 ```bash
-python explainability/lime_analysis.py --image your_image.npy
+# Step 1 — Explore data
+jupyter notebook notebooks/01_data_exploration.ipynb
+
+# Step 2 — Build preprocessing pipeline
+jupyter notebook "notebooks/02_build_preprocessing_pipeline(hyperspectral).ipynb"
+
+# Step 3 — Train final model
+jupyter notebook "notebooks/04_train_model_v2(hyperspectral).ipynb"
+
+# Step 4 — Evaluate + XAI
+jupyter notebook notebooks/04_model_evaluation_and_xai.ipynb
 ```
 
 ---
